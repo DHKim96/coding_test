@@ -1,12 +1,12 @@
-package BOJ;
+package BOJ.dataStructure.stack;
 
 import java.io.*;
 
-public class Main {
+public class BOJ9012 {
     /*
-    BOJ NO.4949 : 균형잡힌 세상
-        괄호 문자열 판단하기
-    */
+  BOJ NO.9012 : 괄호
+      괄호 문자열 판단하기
+  */
     static char[] stack;  // 스택을 저장할 배열
     static int idx;  // 스택의 현재 위치(크기)
 
@@ -15,41 +15,36 @@ public class Main {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         // 정수 K 입력 받기
+        int T = Integer.parseInt(br.readLine());
+
         StringBuilder sb = new StringBuilder();
 
-        stack = new char[100]; // 문자열 최대 길이 100
-        //  => idx 값으로 스택을 사용하기 때문에 매번 배열을 초기화할 필요 없음
-
-        String input = br.readLine();
-
-        while (!(input = br.readLine()).equals(".")) {
+        while (T-- > 0) {
+            String s = br.readLine();
+            stack = new char[s.length()]; // 스택의 크기는 입력된 문자열의 길이와 같음
             idx = 0;  // 스택의 초기화
 
             boolean isValid = true;
 
-            for(int i = 0; i < input.length(); i++) {
-                char c = input.charAt(i);
-
-                if(c == '(' || c == '['){ // 여는 괄호
-                    push(c);
-                } else if (c == ')' || c == ']'){ // 닫는 괄호일 때
-                    if (empty()){ // 닫는 괄호일 때 스택이 비어있다면 무조건 불균형
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                // 여는 괄호일 때
+                if(c == '('){
+                    push(c); // 스택에 입력
+                } else { // 닫는 괄호일 때
+                    // 스택이 비어있는데 닫는 괄호가 나온다면
+                    // 해당 괄호 문자열은 무조건 올바르지 않은 괄호 문자열임
+                    if(empty()){
                         isValid = false;
                         break;
                     } else {
-                        if (c == ')' && peek() == '('){
-                            pop();
-                        } else if (c == ']' && peek() == '['){
-                            pop();
-                        } else {
-                            isValid = false;
-                        }
+                        pop(); // 괄호 쌍이 맞으면 스택에서 제거
                     }
                 }
             }
 
-            if(empty() && isValid) sb.append("yes").append("\n");
-            else sb.append("no").append("\n");
+            if(empty() && isValid) sb.append("YES").append("\n");
+            else sb.append("NO").append("\n");
         }
 
         bw.write(sb.toString());

@@ -1,8 +1,8 @@
-package BOJ;
+package BOJ.dataStructure.stack;
 
 import java.io.*;
 
-public class Main {
+public class BOJ4949 {
     /*
     BOJ NO.4949 : 균형잡힌 세상
         괄호 문자열 판단하기
