@@ -4,29 +4,47 @@ import java.io.*;
 
 public class Main {
     /*
-      BOJ NO.1929 : 소수 구하기
-        M 이상 N 이하의 소수 모두 출력하는 프로그램
-        => 에라토스테네스의 체 이용
-     */
+    BOJ NO.9012 : 괄호
+        괄호 문자열 판단하기
+    */
+    static char[] stack;  // 스택을 저장할 배열
+    static int idx;  // 스택의 현재 위치(크기)
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
-        // M, N 입력 받기
-        String[] input = br.readLine().split(" ");
-        int M = Integer.parseInt(input[0]);
-        int N = Integer.parseInt(input[1]);
 
-        // 소수 판별할 배열 생성(동적 초기화)
-        boolean[] isPrime = new boolean[N + 1];
-        
-        // 에라토스테네스의 체 알고리즘 실행
-        eratosthenes(isPrime, N);
-        
-        // M 이상 N 이하 소수 출력
+        // 정수 K 입력 받기
+        int T = Integer.parseInt(br.readLine());
+        stack = new char[50];  // 괄호 문자열의 최대 길이는 50이하
+
         StringBuilder sb = new StringBuilder();
-        for(int i = M; i <= N; i++){
-            if(isPrime[i]) sb.append(i).append("\n");
+
+        while (T-- > 0) {
+            idx = 0;  // 스택의 초기 크기 0
+
+            String s = br.readLine();
+
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                push(c);
+            }
+
+            while(size() >= 2){
+                System.out.println(size());
+                if(pop() == '('){
+                    if(peek() == ')'){
+                        pop();
+                    }
+                } else {
+                    if(peek() == '('){
+                        pop();
+                    }
+                }
+            }
+
+            if(size() == 0) sb.append("YES").append("\n");
+            else sb.append("NO").append("\n");
         }
 
         bw.write(sb.toString());
@@ -34,22 +52,31 @@ public class Main {
         bw.close();
         br.close();
     }
-    
-    // 에라토스테네스의 체 알고리즘 구현
-    // 소수의 배수는 소수가 아니다
-    public static void eratosthenes(boolean[] isPrime, int N){
-        for(int i = 2; i <= N; i++){ 
-            isPrime[i] = true; // 0,1 제외한 모든 정수를 소수로 가정
-        }
 
-        for(int i = 2; i * i <= N; i++){
-            if(isPrime[i]){
-                for(int j = i * i; j <= N; j += i){
-                    // 2일 경우 4부터 시작, 3일 경우 9부터 시작(6은 2의 배수 제거시 제거) ...
-                    // 따라서 i의 거듭제곱부터 제거(그 이전의 수들은 이전 수의 배수들을 제거하는 작업에서 이미 걸러짐)
-                    isPrime[j] = false;
-                }
-            }
-        }
+    // 정수 X를 스택에 넣는 메소드
+    public static void push(char item) {
+        stack[idx++] = item;
+    }
+
+    // 스택의 맨 위 정수를 꺼내는 메소드 (꺼낸 후 해당 자리를 0으로 초기화)
+    public static char pop() {
+        char item = stack[--idx];
+        stack[idx] = ' ';
+        return item;
+    }
+
+    // 스택의 크기 반환
+    public static int size() {
+        return idx;
+    }
+
+    // 스택이 비어있는지 여부 확인
+    public static boolean empty() {
+        return idx == 0;
+    }
+
+    // 스택의 맨 위 정수를 반환(꺼내지 않고)
+    public static char peek() {
+        return stack[idx - 1];
     }
 }
