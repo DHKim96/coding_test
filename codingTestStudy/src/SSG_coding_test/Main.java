@@ -18,7 +18,7 @@ public class Main {
  */
 	
 	// 문서의 정보 담을 내부클래스(static 함수에서 사용하기에 static 클래스 선언)
-	class Document{
+	static class Document{
 		int index; // 문서의 기존 순번
 		int importance; // 중요도
 		

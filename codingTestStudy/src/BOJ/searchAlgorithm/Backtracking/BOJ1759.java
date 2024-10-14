@@ -1,4 +1,4 @@
-package BOJ.searchAlgorithm;
+package BOJ.searchAlgorithm.Backtracking;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

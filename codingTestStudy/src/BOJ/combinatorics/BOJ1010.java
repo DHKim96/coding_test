@@ -1,22 +1,18 @@
-package BOJ;
+package BOJ.combinatorics;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
-public class Main {
-    /*
+public class BOJ1010 {
+        /*
         BOJ NO.1010 : 다리 놓기
      */
 
     public static long combination(int n, int r){
         if (n == r || r == 0) return 1;
         if (r > n / 2) r = n - r; // 조합의 대칭성 활용
-        
+
         long result = 1;
-        
+
         for(int i = 0; i < r; i++){
             result *= (n - i);
             result /= (i + 1);

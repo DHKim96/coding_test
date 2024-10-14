@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Member;
 import java.util.Arrays;
 
 
@@ -16,7 +17,24 @@ public class BOJ10814 {
 	 * 
 	 * 내장 정렬 메서드 사용 & 람다식으로 compare 사용해 조건부 정렬 구현
 	 */
-	
+
+	static class Member {
+		int age;
+		String name;
+
+		public Member() {}
+
+		public Member(int age, String name) {
+			this.age = age;
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return this.age + " " + this.name;
+		}
+	}
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -51,19 +69,3 @@ public class BOJ10814 {
     }
 }
 
-class Member {
-	int age;
-	String name;
-	
-	public Member() {}
-	
-	public Member(int age, String name) {
-		this.age = age;
-		this.name = name;
-	}
-	
-	@Override
-	public String toString() {
-		return this.age + " " + this.name;
-	}
-}
