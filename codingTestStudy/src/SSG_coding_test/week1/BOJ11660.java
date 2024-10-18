@@ -21,25 +21,15 @@ public class BOJ11660 {
         int N = Integer.parseInt(input[0]);
         int M = Integer.parseInt(input[1]);
 
-        // 2. 표 입력 받기
-        int[][] table = new int[N+1][N+1];
+        // 2. 좌표별 요소 입력 받기 => 동시에 누적합 배열로 변환
+        int[][] sum = new int[N+1][N+1]; // 인덱스 0은 사용하지 않음
 
         for (int i = 1; i <= N; i++) {
             String[] line = br.readLine().split(" ");
 
             for (int j = 1; j <= N; j++) {
-                table[i][j] = Integer.parseInt(line[j - 1]);
+                sum[i][j] = Integer.parseInt(line[j - 1]) + sum[i][j-1] + sum[i-1][j] - sum[i-1][j-1];
             }
-        }
-
-        // 3. 누적합 배열 생성
-
-        int[][] sum = new int[N+1][N+1];
-
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                sum[i][j] = table[i][j] + sum[i][j-1] + sum[i-1][j] - sum[i-1][j-1];
-            };
         }
 
         // 3. x1, y1, x2, y2 입력 받기
