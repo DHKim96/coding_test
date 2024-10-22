@@ -2,7 +2,7 @@ package SSG_coding_test.week1;
 
 import java.io.*;
 
-public class BOJ12919{
+public class BOJ12919 {
     /*
         [BOJ] A와 B 2
         => 주어진 조건을 활용해서 S를 T로 만들 수 있는지 없는지 알아내는 프로그램
