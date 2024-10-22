@@ -16,6 +16,7 @@ public class BOJ15686 {
 	public static List<int[]> homes; // 집의 위치를 저장하는 리스트
 	public static List<int[]> chickens; // 치킨집의 위치를 저장하는 리스트
 	public static int[][] distance; // 각 집에서 모든 치킨집까지의 거리를 저장한 이차원 배열
+	public static int min; // 최소 치킨 거리 저장하는 변수
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,7 +30,9 @@ public class BOJ15686 {
 		
 		homes = new ArrayList<>();
 		
-		chickens = new ArrayList<>(); 
+		chickens = new ArrayList<>();
+
+		min = Integer.MAX_VALUE;
 		
 		// 도시 정보 입력
 		for(int i = 1; i <= N; i++) {
@@ -49,7 +52,7 @@ public class BOJ15686 {
 		calcAllDistance(); 
 		
 		// 하나씩 폐업시키며 최솟값 산출
-		System.out.println(closeKfc(chickens.size(), 0, M, Integer.MAX_VALUE));
+		System.out.println(closeKfc(chickens.size(), 0, M));
 		
 		br.close();
 		
@@ -59,10 +62,9 @@ public class BOJ15686 {
 	 * @param depth : 남은 치킨집의 수
 	 * @param start : 다음 탐색할 치킨집
 	 * @param M : 폐업시키지 않을 치킨집의 갯수
-	 * @param minDistance : 최솟값 비교 목적의 변수
 	 * @return 최소 치킨 거리
 	 */
-	public static int closeKfc(int depth, int start, int M, int minDistance) {
+	public static int closeKfc(int depth, int start, int M) {
 	    if (depth == M) {
 	        return sumAllDistance();
 	    }
@@ -70,11 +72,11 @@ public class BOJ15686 {
 	    for (int i = start; i < chickens.size(); i++) {
 	        int[] xy = chickens.get(i);
 	        closed[xy[0]][xy[1]] = true; // 폐업 처리
-	        minDistance = Math.min(minDistance, closeKfc(depth - 1, i + 1, M, minDistance));
+	        min = Math.min(min, closeKfc(depth - 1, i + 1, M));
 	        closed[xy[0]][xy[1]] = false; // 복구
 	    }
 	    
-	    return minDistance;
+	    return min;
 	}
 	
 	public static int sumAllDistance() {
