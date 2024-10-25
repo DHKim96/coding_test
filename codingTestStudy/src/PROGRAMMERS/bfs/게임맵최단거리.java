@@ -1,5 +1,8 @@
 package PROGRAMMERS.bfs;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class 게임맵최단거리 {
     private static int[] mRow = {-1, 1, 0, 0}; // 상 하 좌 우를 위한 값
     private static int[] mCol = {0, 0, -1, 1};
