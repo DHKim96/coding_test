@@ -1,6 +1,12 @@
 package SSG_coding_test.week2;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BOJ1303 {
     /*
@@ -11,6 +17,8 @@ public class BOJ1303 {
     static char[][] battle; // 전쟁터
     static boolean[][] visited; // 방문 배열
     static int count;
+    static int[] bRow = {-1, 1, 0, 0};  // 행의 상 하 좌 우
+    static int[] bCol = {0, 0, -1, 1}; // 열의 상하좌우
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -18,62 +26,78 @@ public class BOJ1303 {
 
         String[] input = br.readLine().split(" ");
 
-        int N = Integer.parseInt(input[0]); // 전쟁터 가로
-        int M = Integer.parseInt(input[1]); // 전쟁터 세로
-
-        battle = new char[N][M];
-        visited = new boolean[N][M];
+        int N = Integer.parseInt(input[0]); // 전쟁터 세로
+        int M = Integer.parseInt(input[1]); // 전쟁터 가로
+        
+        battle = new char[M][N];
+        visited = new boolean[M][N];
 
         count = 0;
-
-        for(int i = 0; i < N; i++) {
+        
+        List<Integer> whitePowerList = new ArrayList<>();
+        List<Integer> bluePowerList = new ArrayList<>();
+        
+        // 전쟁터 입력 받기
+        for(int i = 0; i < M; i++) {
             String line = br.readLine();
-            for(int j = 0; j < M; j++) {
+            for(int j = 0; j < N; j++) {
                battle[i][j] = line.charAt(j);
             }
         }
-
-        dfs(0, 0);
-
-        System.out.println(count);
-
+        
+        
+        // 단절된 노드들까지 모두 확인하기 위한 반복문(프로그래머스 네트워크 문제 참고)
+        for(int i = 0; i < M; i++) {
+            for(int j = 0; j < N; j++) {
+               if (battle[i][j] == 'W' && !visited[i][j]) {
+            	   dfs(i, j, 'W');
+            	   whitePowerList.add(count);
+            	   count = 0;
+               } else if (battle[i][j] == 'B' && !visited[i][j]) {
+            	   dfs(i, j, 'B');
+            	   bluePowerList.add(count);
+            	   count = 0;
+               }
+            }
+        }
+        
+        int powerOfWhite = 0;
+        int powerOfBlue = 0;
+        
+        for (int num : whitePowerList) {
+        	powerOfWhite += num * num;
+        }
+        
+        for (int num : bluePowerList) {
+        	powerOfBlue += num * num;
+        }
+        
+        bw.write(powerOfWhite + " " + powerOfBlue);
+        bw.flush();
+        bw.close();
         br.close();
     }
 
-    public static void dfs(int x, int y) {
-        if (!canMove(x,y)) return;
-
-        for(int i = x; i < battle.length; i++) {
-            for(int j = y; j < battle.length; j++) {
-                if (visited[i][j]) continue;
-                count++;
-
-                dfs(i, j);
-
-            }
-        }
+    public static void dfs(int x, int y, char type) {
+    	visited[x][y] = true;
+    	count++;
+    	
+    	// 상하좌우 이동 가능 여부 판별 (프로그래머스 게임맵최단거리 참고)
+    	for (int i = 0; i < 4; i++) {
+    		int nextRow = x + bRow[i];
+    		int nextCol = y + bCol[i];
+    		if (canMove(nextRow, nextCol, type)) {
+    			dfs(nextRow, nextCol, type);
+    		}
+    	}
     }
 
-    // 진행할 수 있는지 확인
-    public static boolean canMove(int x, int y){
-        // 상
-        if (x > 0 && ( !visited[x - 1][y] || battle[x - 1][y] != 'W' )){
-            return true;
-        }
-        // 하
-        if (x < battle.length - 1 && (!visited[x + 1][y] || battle[x + 1][y] != 'W')){
-            return true;
-        }
-        // 좌
-        if (y > 0 && (!visited[x][y - 1] || battle[x][y - 1] != 'W')){
-            return true;
-        }
-        // 우
-        if (y < battle.length - 1 && (!visited[x][y + 1] || battle[x][y + 1] != 'W')){
-            return true;
-        }
-
-        return false;
+    // 상하좌우 중 하나라도 움직일 수 있는지 체크(프로그래머스 게임맵최단거리 참고)
+    public static boolean canMove(int x, int y, char type){        	
+    	return x >= 0 && y >= 0 && x < battle.length && y < battle[0].length 
+    				&& !visited[x][y]  && battle[x][y] == type;
+    	
     }
+       
 
 }
