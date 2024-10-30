@@ -77,7 +77,6 @@ public class BOJ24444 {
             sb.append(visited[node]).append("\n"); // 방문 순서를 각 정점에 대해 기록
         }
 
-
         // 결과 출력
         bw.write(sb.toString());
         bw.flush();
