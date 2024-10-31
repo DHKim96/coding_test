@@ -20,7 +20,6 @@ public class 가장큰수 {
         for (String str : strs){
             sb.append(str);
         }
-        
         return sb.toString();
     }
 }

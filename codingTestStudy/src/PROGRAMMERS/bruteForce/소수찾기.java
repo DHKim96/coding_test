@@ -3,7 +3,7 @@ package PROGRAMMERS.bruteForce;
 import java.util.Set;
 import java.util.HashSet;
 
-class Solution {
+class 소수찾기 {
     private static boolean[] isPrime;
     private static Set<Integer> primeSet;
     

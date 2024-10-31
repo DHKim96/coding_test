@@ -1,8 +1,6 @@
 package SSG_coding_test.week2;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class BOJ7576 {
@@ -31,6 +29,7 @@ public class BOJ7576 {
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
 		String[] input = br.readLine().split(" ");
 		
@@ -50,9 +49,9 @@ public class BOJ7576 {
 			}
 		}
 
-		int num = bfs(box, queue);
-
-		System.out.println(num);
+		bw.write(bfs(box, queue) + "");
+		bw.flush();
+		bw.close();
 		br.close();
 
 	}
