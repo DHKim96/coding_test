@@ -1,6 +1,6 @@
 package PROGRAMMERS.dfs;
 
-class Solution {
+class 타겟넘버 {
     public int solution(int[] numbers, int target) {
         return dfs(numbers, target, 0, 0);
     }
