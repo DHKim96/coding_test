@@ -12,9 +12,6 @@ public class Question2 {
         0<= xcost <= 1000
         0<= ycost <= 1000
      */
-    private static int[] dx = {0, 1}; // 우측, 하단
-    private static int[] dy = {1, 0};
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -51,68 +48,48 @@ public class Question2 {
         int row = cost.length;
 
         int[][] dp = new int[row][]; // 이익 저장할 배열
-
+        
         for (int i = 0; i < row; i++) {
             dp[i] = new int[cost[i].length];
         }
-
-
-
-
-//        int totalCost = cost[0][0];
-//
-//        // 그리디? 당장 최선의 이익의 합이 최대 이익?
-//
-//        int currRow = 0;
-//        int currCol = 0;
-//
-//        while (currRow < cost.length && currCol < cost[0].length) {
-//            int rightCost = 0;
-//            int downCost = 0;
-//
-//            for (int i = 0; i < 2; i++){
-//                int nextRow = currRow + dx[i];
-//                int nextCol = currCol + dy[i];
-//
-//                if (nextRow < cost.length && nextCol < cost[nextRow].length) {
-//                    if(i == 0) rightCost = cost[nextRow][nextCol] - xcost;// 우측 이동
-//                    else downCost = cost[nextRow][nextCol] - ycost; // 하단 이동
-//                }
-//            }
-//
-//
-//            if (rightCost >= downCost) { // 우측 이동 시 이익이 크다면 우측 이동
-//                currRow += dx[0];
-//                currCol += dy[0];
-//                totalCost += rightCost;
-//                System.out.println("right" + totalCost);
-//            } else { // 하단 이동 시 이익이 더 크다면 하단 이동
-//                currRow += dx[1];
-//                currCol += dy[1];
-//                totalCost += downCost;
-//                System.out.println("down" + totalCost);
-//            }
-//
-//
-//            while(currRow == cost.length - 1 && currCol < cost[currRow].length - 1) { // 지상층 도착 시
-//                int nextRow = currRow + dx[0];
-//                int nextCol = currCol + dy[0];
-//
-//                rightCost = cost[nextRow][nextCol] - xcost;
-//
-//                if (rightCost >= 0) {
-//                   currRow += dx[0];
-//                   currCol += dy[0];
-//
-//                   totalCost += rightCost;
-//                   System.out.println("right" + totalCost);
-//               }
-//            }
-//        }
-//
-//        if (totalCost <= 0 ) totalCost = 0;
-//
-//        return totalCost;
+        
+        dp[0][0] = cost[0][0];
+        
+        // 누적 합 문제처럼 접근
+        
+        // 1. 첫 번째 행 초기화
+        for (int i = 1; i < dp[0].length; i++) {
+        	dp[0][i] = dp[0][i - 1] + cost[0][i] - xcost; 
+        }
+        
+        // 2. 첫 번째 열 초기화
+        for (int i = 1; i < row; i++) {
+        	dp[i][0] = dp[i - 1][0] + cost[i][0] - ycost;
+        }
+        
+        // 3. 누적합 채우기
+        // => 위에서 하단 이동한 경우 또는 왼쪽에서 우측 이동한 경우 중 최대 이익 저장
+        int rightCost = 0;
+        int downCost = 0;
+        
+        for (int i = 1; i < row; i++) {
+        	for (int j = 1; j < dp[i].length; j++) {
+        		 
+        		rightCost = dp[i][j - 1] + cost[i][j] - xcost;
+        		downCost = dp[i - 1][j] + cost[i][j] - ycost;
+        		dp[i][j] = Math.max(rightCost, downCost);
+        	}
+        }
+        
+        // 4. 최대 이익 계산
+        // => 마지막 row(지상층)에서 가장 큰 값 찾기
+        int answer = 0;
+        
+        for (int num : dp[row - 1]) {
+        	answer = Math.max(answer, num);
+        } // => 0보다 작은 값이 나올 경우 0이 반환이 보장됨
+        
+        return answer;
     }
 
 }
