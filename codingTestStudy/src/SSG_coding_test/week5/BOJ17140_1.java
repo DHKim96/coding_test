@@ -1,18 +1,20 @@
 package SSG_coding_test.week5;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
-public class BOJ17140{
+public class BOJ17140_1{
     /*
         [BOJ]17140 : 이차원 배열과 연산
-        
         => 박치기 구현
     */
 
     public static int[][] A; // 결과 담은 배열
     public static int time; // 시간
-    public static Map<Integer, Integer> frequencyMap; // frequencyMap<n, n의 등장 횟수>
+    public static int[] composition; // composition[n] == n 의 등장 횟수
     public static List<List<int[]>> sortedList; // 각 행과 열의 [n, n 등장 횟수] 담을 리스트
 
     public static void main(String[] args) throws IOException{
@@ -37,18 +39,16 @@ public class BOJ17140{
         }
 
         int result = -1;
-        
-        frequencyMap = new HashMap<>(); // 숫자는 최대 100개
-        
-        
+
         while(time <= 100){ // time < 100 하는 바람에 계속 틀림
             if (isTargetValue(r, c, k)) {
                 result = time;
                 break;
             }
             
+            composition = new int[101]; // 숫자는 최대 100개
             sortedList = new ArrayList<>();
-
+            
             if (shouldApplyR()) operateR();
             else operateC();
 
@@ -78,11 +78,13 @@ public class BOJ17140{
             List<int[]> row = new ArrayList<>();
 
             for (int j = 0; j < A[1].length; j++){
-            	if (A[i][j] > 0) frequencyMap.put(A[i][j], frequencyMap.getOrDefault(A[i][j], 0) + 1);
+                composition[A[i][j]]++;
             }
 
-            for (int key : frequencyMap.keySet()) {
-            	row.add(new int[] {key, frequencyMap.get(key)});
+            for (int j = 1; j <= 100; j++){
+                if(composition[j] > 0){ // j = 수 / composition[j] = j의 등장 횟수
+                    row.add(new int[]{j, composition[j]});
+                }
             }
 
             maxSize = Math.max(maxSize, 2 * row.size());
@@ -92,7 +94,7 @@ public class BOJ17140{
 
             sortedList.add(row);
 
-            frequencyMap = new HashMap<>(); // 초기화
+            composition = new int[101]; // 초기화
         }
 
         updateArray(A.length, maxSize, true);
@@ -106,11 +108,13 @@ public class BOJ17140{
             List<int[]> col = new ArrayList<>();
 
             for (int j = 0; j < A.length; j++){
-            	if (A[j][i] > 0) frequencyMap.put(A[j][i], frequencyMap.getOrDefault(A[j][i], 0) + 1);
+                composition[A[j][i]]++;
             }
 
-            for (int key : frequencyMap.keySet()) {
-            	col.add(new int[] {key, frequencyMap.get(key)});
+            for (int j = 1; j <= 100; j++){
+                if(composition[j] > 0){ // j = 수 / composition[j] = j의 등장 횟수
+                    col.add(new int[]{j, composition[j]});
+                }
             }
 
             maxSize = Math.max(maxSize, 2 * col.size());
@@ -120,7 +124,7 @@ public class BOJ17140{
 
             sortedList.add(col);
 
-            frequencyMap.clear(); // 초기화
+            composition = new int[101]; // 초기화
         }
 
         updateArray(maxSize, A[1].length, false);
@@ -164,4 +168,4 @@ public class BOJ17140{
         A[2*clIdx][slIdx] = pair[0];
         A[2*clIdx + 1][slIdx] = pair[1];
     }
-}
+} 
