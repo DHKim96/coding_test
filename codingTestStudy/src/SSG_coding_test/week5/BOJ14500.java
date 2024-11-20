@@ -6,57 +6,24 @@ import java.util.StringTokenizer;
 public class BOJ14500 {
     /*
         * [BOJ] 테트로미노
-        *
-        *
-        * // 시작점 기준으로 테트로미노 놓기 / 회전
-        *
-        * straight  (시작점 r,c 일때)
-        *   => (12시) [r, c], [r - 1, c], [r - 2, c], [r - 3, c]
-        *   => (3시) [r, c], [r, c + 1], [r, c + 2], [r, c + 3]
-        *   => (6시) [r, c], [r + 1, c], [r + 2, c], [r + 3, c]
-        *   => (9시) [r, c], [r, c - 1], [r, c - 2], [r, c - 3]
-        *
-        * square
-        *   => (12시) (r,c), (r,c+1) (r-1,c) (r-1,c+1)
-        *   => (3시) (r,c), (r,c+1) (r+1,c) (r+1,c+1)
-        *   => (6시) (r,c), (r,c-1) (r+1,c) (r+1,c-1)
-        *   => (9시) (r,c), (r,c-1) (r-1,c) (r-1,c-1)
-        *
-        * L
-        *   // 회전
-        *   => (12시) (r,c) (r-1,c) (r-2,c) (r-2,c-1)
-        *       => 대칭 (r,c) (r-1,c) (r-2,c) (r-2,c+1)
-        *   => (3시) (r,c) (r,c+1) (r,c+2) (r-1,c+2)
-        *       => 대칭 (r,c) (r,c+1) (r,c+2) (r+1,c+2)
-        *   => (6시) (r,c) (r+1,c) (r+2,c) (r+2,c+1)
-        *       => 대칭 (r,c) (r+1,c) (r+2,c) (r+2,c-1)
-        *   => (9시) (r,c) (r,c-1) (r,c-2) (r+1,c-2)
-        *       => 대칭 (r,c) (r,c-1) (r,c-2) (r-1,c-2)
-        *
-        * skew
-        *   // 회전
-        *   => (12시) (r,c) (r-1, c), (r-1, c-1), (r-2, c-1)
-        *       => 대칭 (r,c) (r-1, c), (r-1, c+1), (r-2, c+1)
-        *   => (3시) (r,c) (r, c+1), (r-1, c+1), (r-1, c+2)
-        *		=> 대칭 (r,c) (r, c+1), (r+1, c+1), (r+1, c+2)
-        *   => (6시) (r,c) (r+1, c), (r+1, c+1), (r+2, c+1)
-        *		=> 대칭 (r,c) (r+1, c), (r+1, c-1), (r+2, c-2)
-        *   => (9시) (r,c) (r, c-1), (r+1, c-1), (r+2, c-2)
-        *   	=> 대칭 (r,c) (r, c-1), (r-1, c-1), (r-2, c-2)
-        *
-        * T
-        * 	// 회전
-        * 	=> 12시 : 
-        * 		=> 대칭 : 
-        * 	=> 3시 : r,c / r, c+1 / r+1, c+1 / r, c+2
-        * 		=> 대칭 :  r,c / r, c+1 / r-1, c+1 / r, c+2
-        * 	=> 6시 : r,c / r+1, c / r+1, c-1/ r+2,c
-        * 		=> 대칭 : r,c / r+1, c / r+1, c+1/ r+2,c
-        * 	=> 9시 : r,c / r, c-1 / r, 
-        * 
-        * 	
-        *
+            * => 완전 탐색
      */
+    static int[][] paper;
+    static boolean[][] visited;
+    static int N, M, maxSum;
+
+    //상하좌우
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+
+    // 테트로미노 "ㅗ" 모양 별도 정의
+    static int[][][] tetroT = {
+            {{0, 0}, {1, 0}, {1, 1}, {2, 0}},
+            {{0, 0}, {1, -1}, {1, 0}, {2, 0}},
+            {{0, 0}, {0, 1}, {0, 2}, {1, 1}},
+            {{0, 0}, {1, -1}, {1, 0}, {1, 1}}
+    };
+
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -64,10 +31,12 @@ public class BOJ14500 {
 
         StringTokenizer stk = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(stk.nextToken()); // 세로
-        int M = Integer.parseInt(stk.nextToken()); // 가로
+        N = Integer.parseInt(stk.nextToken()); // 세로
+        M = Integer.parseInt(stk.nextToken()); // 가로
+        maxSum = 0;
+        paper = new int[N][M];
+        visited = new boolean[N][M];
 
-        int[][] paper = new int[N][M];
 
         for (int i = 0; i < N; i++) {
             stk = new StringTokenizer(br.readLine());
@@ -76,9 +45,64 @@ public class BOJ14500 {
             }
         }
 
-        bw.write("");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                visited[i][j] = true;
+                dfs(i, j, 0, paper[i][j]);
+                visited[i][j] = false;
+
+                checkTetroT(i, j);
+            }
+        }
+
+        bw.write(maxSum + "");
         bw.flush();
         bw.close();
         br.close();
     }
+
+
+    public static void dfs(int row, int col, int depth, int sum){
+        if (depth == 3){
+            maxSum = Math.max(maxSum, sum);
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int nextRow = row + dx[i];
+            int nextCol = col + dy[i];
+
+            if (canMove(nextRow, nextCol)){
+                visited[nextRow][nextCol] = true;
+                dfs(nextRow, nextCol, depth+1, sum + paper[nextRow][nextCol]);
+                visited[nextRow][nextCol] = false;
+            }
+        }
+    }
+
+    public static void checkTetroT(int row, int col){
+        for (int[][] shape : tetroT) {
+            int sum = 0;
+            boolean valid = true;
+            for (int[] block : shape){
+                int nextRow = row + block[0];
+                int nextCol = col + block[1];
+
+                if (!canMove(nextRow, nextCol)) {
+                    valid = false;
+                    break;
+                }
+
+                sum += paper[nextRow][nextCol];
+            }
+            if (valid){
+                maxSum = Math.max(maxSum, sum);
+            }
+        }
+    }
+
+    public static boolean canMove(int row, int col){
+        return row < paper.length && row >= 0 && col >= 0 && col < paper[0].length && !visited[row][col];
+    }
+
 }
