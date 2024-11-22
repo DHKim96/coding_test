@@ -1,5 +1,7 @@
 package SSG_coding_test.week6;
 
+import org.w3c.dom.Node;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,52 +30,43 @@ public class BOJ1068 {
 		// 방문 배열
 		boolean[] visited = new boolean[N];
 
+		String[] input = br.readLine().split(" ");
+
 		for (int i = 0; i < N; i++) {
 			tree.add(new ArrayList<>());
 		}
 
-		String[] input = br.readLine().split(" ");
-		
-		int root = -1;
-		
 		for (int i = 0; i < N; i++) {
 			int parent = Integer.parseInt(input[i]);
 
 			if (parent == -1) {
-				root = i;
+				tree.get(0).add(i);
 			} else {
-				tree.get(parent).add(i);				
+				tree.get(parent).add(i);
 			}
+		}
 
-		}
-			
-		
-		for (List<Integer> nodes : tree) {
-			System.out.println(nodes);
-		}
-		
 		// 리프노드는 get 이후 자기보다 큰 숫자가 없는 경우
 
 		int deleteNode = Integer.parseInt(br.readLine());
-		
-		if (deleteNode == root) {
+
+		if (deleteNode == 0) {
 			bw.write(0 + "");
 			bw.flush();
 			bw.close();
 			br.close();
 			return;
 		}
-		
-		 int parent = tree.get(deleteNode).get(0);
-		 
-		 
-		 System.out.println(" 삭제 후");
-		 
+
+		// 부모 노드의 children 리스트에서 해당 노드 제거
 		for (List<Integer> nodes : tree) {
-			System.out.println(nodes);
+			if (node != null) {
+				node.children.removeIf(child -> child.idx == deleteNode);
+			}
 		}
-		 
-		
+
+		tree.set(deleteNode, null);
+
 		// 순회
 		Queue<Integer> q = new LinkedList<>();
 
@@ -82,11 +75,8 @@ public class BOJ1068 {
 		while (!q.isEmpty()) {
 			int node1 = q.poll();
 			visited[node1] = true;
-			
-			System.out.println("currnode =" + node1);
-			System.out.println("tree.get(node1).isEmpty() = " +tree.get(node1).isEmpty());
-			
-			if (tree.get(node1).isEmpty()) {
+
+			if (tree.get(node1).size() == 1) {
 				count++;
 			} else {
 				for (int neighborNode : tree.get(node1)) {
