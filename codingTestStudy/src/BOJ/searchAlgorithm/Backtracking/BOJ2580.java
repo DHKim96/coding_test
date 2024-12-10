@@ -7,14 +7,13 @@ import java.util.StringTokenizer;
 
 public class BOJ2580 {
     private static int[][] board;
-    private static boolean[] used;
+    private static int[] used;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         board = new int[9][9];
-        used = new boolean[10];
 
         List<int[]> list = new ArrayList<>();
 
@@ -30,31 +29,7 @@ public class BOJ2580 {
             }
         }
 
-
-        for (int[] blank : list){
-            used = new boolean[10];
-            int row = blank[0];
-            int col = blank[1];
-
-            // 겹치는 게 있는지 없는지 확인? 없으면 입력
-
-            for (int i = 1; i <= 9; i++){
-
-            }
-
-            int num = 0;
-
-            if (canSearchHorizontal(row)){ // 가로줄 가능 여부
-                num = searchHorizontal(row);
-            } else if (canSearchVertical(col)){ // 세로줄 가능 여부
-                num = searchVertical(col);
-            } else { // 정사각형 내에서 찾기
-                num = searchSquare(row, col);
-            }
-
-            board[row][col] = num;
-        }
-
+        dfs(list, 0, 0);
 
         StringBuilder sb = new StringBuilder();
 
@@ -74,63 +49,60 @@ public class BOJ2580 {
         br.close();
     }
 
-    public static boolean canSearchHorizontal(int row){
-        int count = 0;
-
-        for (int i = 0; i < 9; i++){
-            if (board[row][i] == 0){
-                count++;
-            }
-
-            if (count >= 2){
-                return false;
-            }
+    public static void dfs(List<int[]> list, int startIdx, int depth){
+        if (depth == list.size()){
+            return;
         }
 
-        return true;
+        for (int i = startIdx; i < list.size(); i++) {
+            int[] blank = list.get(i);
+
+            int row = blank[0];
+            int col = blank[1];
+
+            // 겹치는 게 있는지 없는지 확인? 없으면 입력
+            for (int num = 1; num <= 9; num++) {
+                board[row][col] = num;
+
+                if (canSearchHorizontal(row) && canSearchVertical(col) && canSearchSquare(row, col)) {
+                    dfs(list, i + 1, depth + 1);
+                    if (isPossible()){
+                        return;
+                    }
+                }
+
+                board[row][col] = 0;
+            }
+
+            if (!isPossible()){
+                return;
+            }
+        }
     }
 
     public static boolean canSearchVertical(int col){
-        int count = 0;
+        used = new int[10];
 
         for (int i = 0; i < 9; i++){
-            if (board[i][col] == 0){
-                count++;
-            }
-
-            if (count >= 2){
-                return false;
-            }
+            used[board[i][col]]++;
         }
 
-        return true;
+        return canUse();
     }
 
-    public static int searchHorizontal(int row){
+
+    public static boolean canSearchHorizontal(int row){
+        used = new int[10];
+
         for (int i = 0; i < 9; i++){
-            int num = board[row][i];
-
-            if (num != 0){
-                used[num] = true;
-            }
+            used[board[row][i]]++;
         }
-
-        return calcNum();
+        return canUse();
     }
 
-    public static int searchVertical(int col){
-        for (int i = 0; i < 9; i++){
-            int num = board[i][col];
 
-            if (num != 0){
-                used[num] = true;
-            }
-        }
-
-        return calcNum();
-    }
-
-    public static int searchSquare(int row, int col){
+    public static boolean canSearchSquare(int row, int col){
+        used = new int[10];
         // 3으로 나눈 몫 ~ 몫 + 2
 
         int startRow = row / 3 * 3;
@@ -138,24 +110,33 @@ public class BOJ2580 {
 
         for (int i = startRow; i <= startRow + 2; i++){
             for (int j = startCol; j <= startCol + 2; j++){
-                int num = board[i][j];
+               used[board[i][j]]++;
+            }
+        }
 
-                if (num != 0){
-                    used[num] = true;
+        return canUse();
+    }
+
+    public static boolean canUse(){
+
+        for (int i = 1; i <= 9; i++){
+            if (used[i] > 1){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean isPossible(){
+        for (int[] row : board){
+            for (int col : row){
+                if (col < 1){
+                    return false;
                 }
             }
         }
 
-        return calcNum();
-    }
-
-    public static int calcNum(){
-        for (int i = 1; i <= 9; i++){
-            if (!used[i]){
-                return i;
-            }
-        }
-
-        return -1;
+        return true;
     }
 }
