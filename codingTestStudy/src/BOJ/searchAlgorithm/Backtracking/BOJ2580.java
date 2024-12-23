@@ -7,7 +7,8 @@ import java.util.StringTokenizer;
 
 public class BOJ2580 {
     private static int[][] board;
-    private static int[] used;
+    private static List<int[]> list;
+    private static boolean isVaild;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -15,7 +16,7 @@ public class BOJ2580 {
 
         board = new int[9][9];
 
-        List<int[]> list = new ArrayList<>();
+        list = new ArrayList<>();
 
         // 스도쿠 판 입력 받기
         for (int i = 0; i < 9; i++){
@@ -29,7 +30,7 @@ public class BOJ2580 {
             }
         }
 
-        dfs(list, 0, 0);
+        dfs(0);
 
         StringBuilder sb = new StringBuilder();
 
@@ -37,98 +38,65 @@ public class BOJ2580 {
             for (int j = 0; j < 9; j++){
                 sb.append(board[i][j]).append(" ");
             }
-
-            if (i != 8){
-                sb.append("\n");
-            }
+            sb.append("\n");
         }
 
-        bw.write(sb.toString().trim());
+        bw.write(sb.toString());
         bw.flush();
         bw.close();
         br.close();
     }
 
-    public static void dfs(List<int[]> list, int startIdx, int depth){
+    public static void dfs(int depth){
         if (depth == list.size()){
+            if (checkBoard()){
+                isVaild = true;
+            }
             return;
         }
 
-        for (int i = startIdx; i < list.size(); i++) {
-            int[] blank = list.get(i);
+        int[] blank = list.get(depth);
 
-            int row = blank[0];
-            int col = blank[1];
+        int row = blank[0];
+        int col = blank[1];
 
-            // 겹치는 게 있는지 없는지 확인? 없으면 입력
-            for (int num = 1; num <= 9; num++) {
+        // 겹치는 게 있는지 없는지 확인? 없으면 입력
+        for (int num = 1; num <= 9; num++) {
+            if (isVaild(row, col, num)){
                 board[row][col] = num;
-
-                if (canSearchHorizontal(row) && canSearchVertical(col) && canSearchSquare(row, col)) {
-                    dfs(list, i + 1, depth + 1);
-                    if (isPossible()){
-                        return;
-                    }
+                dfs(depth + 1);
+                if (isVaild){
+                    return;
                 }
-
-                board[row][col] = 0;
-            }
-
-            if (!isPossible()){
-                return;
+                board[row][col] = 0; // 초기화
             }
         }
     }
 
-    public static boolean canSearchVertical(int col){
-        used = new int[10];
-
+    public static boolean isVaild(int row, int col, int num){
         for (int i = 0; i < 9; i++){
-            used[board[i][col]]++;
+            if (board[row][i] == num || board[i][col] == num){
+                return false;
+            }
         }
 
-        return canUse();
-    }
-
-
-    public static boolean canSearchHorizontal(int row){
-        used = new int[10];
-
-        for (int i = 0; i < 9; i++){
-            used[board[row][i]]++;
-        }
-        return canUse();
-    }
-
-
-    public static boolean canSearchSquare(int row, int col){
-        used = new int[10];
         // 3으로 나눈 몫 ~ 몫 + 2
 
-        int startRow = row / 3 * 3;
-        int startCol = col / 3 * 3;
+        int startRow = (row / 3) * 3;
+        int startCol = (col / 3) * 3;
 
         for (int i = startRow; i <= startRow + 2; i++){
             for (int j = startCol; j <= startCol + 2; j++){
-               used[board[i][j]]++;
-            }
-        }
-
-        return canUse();
-    }
-
-    public static boolean canUse(){
-
-        for (int i = 1; i <= 9; i++){
-            if (used[i] > 1){
-                return false;
+                if (board[i][j] == num){
+                    return false;
+                }
             }
         }
 
         return true;
     }
 
-    public static boolean isPossible(){
+    public static boolean checkBoard(){
         for (int[] row : board){
             for (int col : row){
                 if (col < 1){
