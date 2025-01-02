@@ -1,87 +1,70 @@
 package SSG_coding_test.week8;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class BOJ5972 {
-    /*
-    [BOJ]5972 : 택배 배송
-     */
-
-    private static List<List<Edge<Integer, Integer>>> graph;
-    private static int N;
-    private static int min = Integer.MAX_VALUE;
-    private int[] distance;
-
-    static class Edge<V, W> {
-        private V v;
-        private W weight;
-        private boolean visited;
-
-        public Edge(V v, W weight){
-            this.v = v;
-            this.weight = weight;
-            this.visited = false;
-        }
-    }
+    private static List<List<int[]>> graph;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
         StringTokenizer stk = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(stk.nextToken());
+        int N = Integer.parseInt(stk.nextToken());
         int M = Integer.parseInt(stk.nextToken());
-        int[] distance = new int[N];
+        int[] distance = new int[N + 1];
+        Arrays.fill(distance, Integer.MAX_VALUE);
 
-        // 가중치 그래프
+        // 그래프 초기화
         graphInit(N);
 
-        for (int i = 0; i < M; i++){
+        for (int i = 0; i < M; i++) {
             stk = new StringTokenizer(br.readLine());
-
             int x = Integer.parseInt(stk.nextToken());
             int y = Integer.parseInt(stk.nextToken());
             int weight = Integer.parseInt(stk.nextToken());
-
             addEdge(x, y, weight);
         }
 
-        System.out.println(dijkstra(distance));
+        // 다익스트라 실행 및 결과 출력
+        System.out.println(dijkstra(1, N, distance));
+        br.close();
     }
 
-    public static int dijkstra(int[] distance){
+    public static int dijkstra(int start, int N, int[] distance) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[1]));
+        distance[start] = 0;
+        pq.add(new int[]{start, 0});
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int currNode = curr[0];
+            int currDist = curr[1];
 
+            if (currDist > distance[currNode]) continue;
 
-        for (Edge<Integer, Integer> edge : graph.get(node)){
-            if (!edge.visited){
-                edge.visited = true;
-                min = Math.min(dfs(edge.v, sum + edge.weight), min);
-                edge.visited = false;
+            for (int[] next : graph.get(currNode)) {
+                int nextNode = next[0];
+                int nextWeight = next[1];
+                if (distance[currNode] + nextWeight < distance[nextNode]) {
+                    distance[nextNode] = distance[currNode] + nextWeight;
+                    pq.add(new int[]{nextNode, distance[nextNode]});
+                }
             }
         }
 
-        return min;
+        return distance[N];
     }
 
-    public static void addEdge(int x, int y, int weight){
-        graph.get(x).add(new Edge<>(y, weight));
-        graph.get(y).add(new Edge<>(x, weight));
+    public static void addEdge(int x, int y, int weight) {
+        graph.get(x).add(new int[]{y, weight});
+        graph.get(y).add(new int[]{x, weight});
     }
 
-    public static void graphInit(int N){
+    public static void graphInit(int N) {
         graph = new ArrayList<>();
-
-        for(int i = 0; i <= N; i++){
+        for (int i = 0; i <= N; i++) {
             graph.add(new ArrayList<>());
         }
     }
-
-
 }
